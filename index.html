@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Irrigação Inteligente</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Irrigação Inteligente</h1>
+            <p>Monitoramento em tempo real</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="sensor-panel">
+                <h2>Sensores</h2>
+                <div class="sensor-grid">
+                    <div class="sensor-card">
+                        <h3>Umidade do Solo</h3>
+                        <div class="sensor-value" id="umidade-valor">--</div>
+                        <div class="sensor-unit">%</div>
+                        <div class="sensor-status" id="umidade-status">Carregando...</div>
+                    </div>
+                    <div class="sensor-card">
+                        <h3>pH do Solo</h3>
+                        <div class="sensor-value" id="ph-valor">--</div>
+                        <div class="sensor-unit">pH</div>
+                        <div class="sensor-status" id="ph-status">Carregando...</div>
+                    </div>
+                    <div class="sensor-card">
+                        <h3>Fósforo</h3>
+                        <div class="sensor-value" id="fosforo-status">--</div>
+                        <div class="sensor-status" id="fosforo-info">Carregando...</div>
+                    </div>
+                    <div class="sensor-card">
+                        <h3>Potássio</h3>
+                        <div class="sensor-value" id="potassio-status">--</div>
+                        <div class="sensor-status" id="potassio-info">Carregando...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-panel">
+                <h2>Status do Sistema</h2>
+                <div class="status-indicators">
+                    <div class="status-card">
+                        <h3>Irrigação</h3>
+                        <div class="indicator" id="irrigacao-indicator"></div>
+                        <div class="status-text" id="irrigacao-status">Desativada</div>
+                    </div>
+                    <div class="status-card">
+                        <h3>Alerta</h3>
+                        <div class="indicator" id="alerta-indicator"></div>
+                        <div class="status-text" id="alerta-status">Nenhum alerta</div>
+                    </div>
+                </div>
+                <div class="control-panel">
+                    <h3>Controle Manual</h3>
+                    <button id="btn-irrigar" class="btn">Ativar Irrigação</button>
+                    <button id="btn-parar" class="btn btn-danger">Parar Irrigação</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-panel">
+            <h2>Histórico de Leituras</h2>
+            <div class="chart-container">
+                <canvas id="history-chart"></canvas>
+            </div>
+            <div class="table-container">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Umidade</th>
+                            <th>pH</th>
+                            <th>Fósforo</th>
+                            <th>Potássio</th>
+                            <th>Irrigação</th>
+                            <th>Alerta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Dados serão inseridos via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Sistema de Irrigação Inteligente &copy; 2023</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

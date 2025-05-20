@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard IoT - Sistema de Irrigação</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            font-weight: bold;
+        }
+        .sensor-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .status-on {
+            background-color: #28a745;
+            box-shadow: 0 0 10px #28a745;
+        }
+        .status-off {
+            background-color: #dc3545;
+        }
+        .status-warning {
+            background-color: #ffc107;
+            box-shadow: 0 0 10px #ffc107;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="mb-4">
+            <h1 class="text-center">Sistema de Irrigação Inteligente</h1>
+            <p class="text-center text-muted">Dashboard IoT com MQTT</p>
+            <div class="alert alert-info" role="alert">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Status da conexão: <span id="connection-status">Desconectado</span></span>
+                    <button id="btn-connect" class="btn btn-primary btn-sm">Conectar</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="row">
+            <!-- Painel de Sensores -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        Sensores
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5>Umidade</h5>
+                                        <div class="sensor-value" id="umidade-valor">--</div>
+                                        <div class="text-muted">%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5>pH</h5>
+                                        <div class="sensor-value" id="ph-valor">--</div>
+                                        <div class="text-muted">pH</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5>Fósforo</h5>
+                                        <div class="sensor-value" id="fosforo-valor">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5>Potássio</h5>
+                                        <div class="sensor-value" id="potassio-valor">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-muted text-center mt-2">
+                            Última atualização: <span id="sensores-timestamp">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Status e Controle -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        Status do Sistema
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Irrigação
+                                <span>
+                                    <span class="status-indicator" id="irrigacao-indicator"></span>
+                                    <span id="irrigacao-status">--</span>
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Condição Crítica
+                                <span>
+                                    <span class="status-indicator" id="alerta-indicator"></span>
+                                    <span id="alerta-status">--</span>
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Modo de Operação
+                                <span id="modo-operacao">--</span>
+                            </li>
+                        </ul>
+                        <div class="text-muted text-center mb-3">
+                            Última atualização: <span id="status-timestamp">--</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button id="btn-ligar" class="btn btn-success" disabled>Ligar Irrigação</button>
+                            <button id="btn-desligar" class="btn btn-danger" disabled>Desligar Irrigação</button>
+                            <button id="btn-automatico" class="btn btn-primary" disabled>Modo Automático</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        Histórico de Leituras
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="sensores-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Sistema de Irrigação Inteligente &copy; 2023</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script>
+        // Configurações MQTT
+        const MQTT_BROKER = "broker.hivemq.com";
+        const MQTT_PORT = 8884; // Porta WebSocket seguro
+        const MQTT_TOPIC_SENSORES = "irrigacao/sensores";
+        const MQTT_TOPIC_COMANDOS = "irrigacao/comandos";
+        const MQTT_TOPIC_STATUS = "irrigacao/status";
+        const MQTT_CLIENT_ID = `dashboard_${Math.random().toString(16).slice(2, 10)}`;
+
+        // Variáveis globais
+        let mqttClient = null;
+        let isConnected = false;
+        let historicoUmidade = [];
+        let historicoPH = [];
+        let historicoTimestamps = [];
+        const MAX_PONTOS = 20;
+
+        // Elementos do DOM
+        const connectionStatus = document.getElementById('connection-status');
+        const btnConnect = document.getElementById('btn-connect');
+        const btnLigar = document.getElementById('btn-ligar');
+        const btnDesligar = document.getElementById('btn-desligar');
+        const btnAutomatico = document.getElementById('btn-automatico');
+        const umidadeValor = document.getElementById('umidade-valor');
+        const phValor = document.getElementById('ph-valor');
+        const fosforoValor = document.getElementById('fosforo-valor');
+        const potassioValor = document.getElementById('potassio-valor');
+        const irrigacaoIndicator = document.getElementById('irrigacao-indicator');
+        const irrigacaoStatus = document.getElementById('irrigacao-status');
+        const alertaIndicator = document.getElementById('alerta-indicator');
+        const alertaStatus = document.getElementById('alerta-status');
+        const modoOperacao = document.getElementById('modo-operacao');
+        const sensoresTimestamp = document.getElementById('sensores-timestamp');
+        const statusTimestamp = document.getElementById('status-timestamp');
+
+        // Inicialização do gráfico
+        const ctx = document.getElementById('sensores-chart').getContext('2d');
+        const sensoresChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Umidade (%)',
+                        data: [],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'pH',
+                        data: [],
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tempo'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Umidade (%)'
+                        },
+                        min: 0,
+                        max: 100,
+                        position: 'left'
+                    },
+                    y1: {
+                        title: {
+                            display: true,
+                            text: 'pH'
+                        },
+                        min: 0,
+                        max: 14,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            }
+        });
+
+        // Função para conectar ao broker MQTT
+        function conectarMQTT() {
+            if (isConnected) {
+                desconectarMQTT();
+                return;
+            }
+
+            connectionStatus.textContent = "Conectando...";
+            btnConnect.disabled = true;
+
+            // Opções de conexão
+            const options = {
+                clientId: MQTT_CLIENT_ID,
+                clean: true,
+                protocol: 'wss',
+                reconnectPeriod: 1000
+            };
+
+            // URL do broker
+            const url = `wss://${MQTT_BROKER}:${MQTT_PORT}/mqtt`;
+
+            try {
+                mqttClient = mqtt.connect(url, options);
+
+                mqttClient.on('connect', function() {
+                    console.log('Conectado ao broker MQTT');
+                    isConnected = true;
+                    connectionStatus.textContent = "Conectado";
+                    connectionStatus.className = "text-success";
+                    btnConnect.textContent = "Desconectar";
+                    btnConnect.disabled = false;
+                    
+                    // Habilita os botões de controle
+                    btnLigar.disabled = false;
+                    btnDesligar.disabled = false;
+                    btnAutomatico.disabled = false;
+
+                    // Inscreve-se nos tópicos
+                    mqttClient.subscribe(MQTT_TOPIC_SENSORES);
+                    mqttClient.subscribe(MQTT_TOPIC_STATUS);
+                });
+
+                mqttClient.on('message', function(topic, message) {
+                    try {
+                        const payload = JSON.parse(message.toString());
+                        console.log(`Mensagem recebida no tópico ${topic}:`, payload);
+                        
+                        if (topic === MQTT_TOPIC_SENSORES) {
+                            atualizarSensores(payload);
+                        } else if (topic === MQTT_TOPIC_STATUS) {
+                            atualizarStatus(payload);
+                        }
+                    } catch (e) {
+                        console.error('Erro ao processar mensagem:', e);
+                    }
+                });
+
+                mqttClient.on('error', function(error) {
+                    console.error('Erro MQTT:', error);
+                    connectionStatus.textContent = "Erro de conexão";
+                    connectionStatus.className = "text-danger";
+                });
+
+                mqttClient.on('close', function() {
+                    console.log('Conexão MQTT fechada');
+                    isConnected = false;
+                    connectionStatus.textContent = "Desconectado";
+                    connectionStatus.className = "text-danger";
+                    btnConnect.textContent = "Conectar";
+                    btnConnect.disabled = false;
+                    
+                    // Desabilita os botões de controle
+                    btnLigar.disabled = true;
+                    btnDesligar.disabled = true;
+                    btnAutomatico.disabled = true;
+                });
+            } catch (e) {
+                console.error('Erro ao conectar:', e);
+                connectionStatus.textContent = "Erro de conexão";
+                connectionStatus.className = "text-danger";
+                btnConnect.disabled = false;
+            }
+        }
+
+        function desconectarMQTT() {
+            if (mqttClient && isConnected) {
+                mqttClient.end();
+            }
+        }
+
+        function atualizarSensores(dados) {
+            // Atualiza os valores dos sensores na interface
+            umidadeValor.textContent = dados.umidade.toFixed(1);
+            phValor.textContent = dados.ph.toFixed(1);
+            fosforoValor.textContent = dados.fosforo ? "Adequado" : "Baixo";
+            fosforoValor.className = dados.fosforo ? "sensor-value text-success" : "sensor-value text-danger";
+            potassioValor.textContent = dados.potassio ? "Adequado" : "Baixo";
+            potassioValor.className = dados.potassio ? "sensor-value text-success" : "sensor-value text-danger";
+            
+            // Formata o timestamp
+            const timestamp = new Date(dados.timestamp);
+            sensoresTimestamp.textContent = timestamp.toLocaleString();
+            
+            // Adiciona os dados ao histórico
+            adicionarDadosHistorico(dados);
+        }
+
+        function atualizarStatus(dados) {
+            // Atualiza os indicadores de status
+            irrigacaoIndicator.className = `status-indicator ${dados.irrigacao_ativa ? 'status-on' : 'status-off'}`;
+            irrigacaoStatus.textContent = dados.irrigacao_ativa ? "Ativa" : "Desativada";
+            
+            alertaIndicator.className = `status-indicator ${dados.condicao_critica ? 'status-warning' : 'status-off'}`;
+            alertaStatus.textContent = dados.condicao_critica ? "Sim" : "Não";
+            
+            modoOperacao.textContent = dados.modo_manual ? "Manual" : "Automático";
+            modoOperacao.className = dados.modo_manual ? "badge bg-warning" : "badge bg-info";
+            
+            // Formata o timestamp
+            const timestamp = new Date(dados.ultima_atualizacao);
+            statusTimestamp.textContent = timestamp.toLocaleString();
+        }
+
+        function adicionarDadosHistorico(dados) {
+            // Extrai a hora do timestamp
+            const timestamp = new Date(dados.timestamp);
+            const horaFormatada = timestamp.toLocaleTimeString();
+            
+            // Adiciona os dados aos arrays
+            historicoUmidade.push(dados.umidade);
+            historicoPH.push(dados.ph);
+            historicoTimestamps.push(horaFormatada);
+            
+            // Limita o número de pontos no gráfico
+            if (historicoUmidade.length > MAX_PONTOS) {
+                historicoUmidade.shift();
+                historicoPH.shift();
+                historicoTimestamps.shift();
+            }
+            
+            // Atualiza o gráfico
+            sensoresChart.data.labels = historicoTimestamps;
+            sensoresChart.data.datasets[0].data = historicoUmidade;
+            sensoresChart.data.datasets[1].data = historicoPH;
+            sensoresChart.update();
+        }
+
+        function enviarComando(acao) {
+            if (!isConnected || !mqttClient) {
+                alert("Não conectado ao broker MQTT");
+                return;
+            }
+            
+            const comando = { acao: acao };
+            mqttClient.publish(MQTT_TOPIC_COMANDOS, JSON.stringify(comando));
+            console.log(`Comando enviado: ${acao}`);
+        }
+
+        // Event listeners
+        btnConnect.addEventListener('click', conectarMQTT);
+        btnLigar.addEventListener('click', () => enviarComando('ligar_irrigacao'));
+        btnDesligar.addEventListener('click', () => enviarComando('desligar_irrigacao'));
+        btnAutomatico.addEventListener('click', () => enviarComando('modo_automatico'));
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard IoT inicializado');
+        });
+    </script>
+</body>
+</html>

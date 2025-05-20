@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "author": "Sistema de Irrigação Inteligente",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": 0, "left": 200, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 100, "left": 100, "attrs": { "color": "green" } },
+    { "type": "wokwi-pushbutton", "id": "btn2", "top": 100, "left": 200, "attrs": { "color": "blue" } },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr1", "top": 200, "left": 100, "attrs": {} },
+    { "type": "wokwi-relay", "id": "relay1", "top": 200, "left": 200, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 300, "left": 100, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led2", "top": 300, "left": 200, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 350, "left": 100, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 350, "left": 200, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:3V3", "dht1:VCC", "red", [] ],
+    [ "esp:GND", "dht1:GND", "black", [] ],
+    [ "esp:D15", "dht1:SDA", "green", [] ],
+    [ "esp:D2", "btn1:1.l", "green", [] ],
+    [ "btn1:2.r", "esp:GND", "black", [] ],
+    [ "esp:D4", "btn2:1.l", "blue", [] ],
+    [ "btn2:2.r", "esp:GND", "black", [] ],
+    [ "esp:3V3", "ldr1:VCC", "red", [] ],
+    [ "esp:GND", "ldr1:GND", "black", [] ],
+    [ "esp:D34", "ldr1:DO", "yellow", [] ],
+    [ "esp:D5", "relay1:IN", "orange", [] ],
+    [ "esp:GND", "relay1:GND", "black", [] ],
+    [ "esp:3V3", "relay1:VCC", "red", [] ],
+    [ "esp:D18", "r1:1", "green", [] ],
+    [ "r1:2", "led1:A", "green", [] ],
+    [ "led1:C", "esp:GND", "black", [] ],
+    [ "esp:D19", "r2:1", "red", [] ],
+    [ "r2:2", "led2:A", "red", [] ],
+    [ "led2:C", "esp:GND", "black", [] ]
+  ],
+  "dependencies": {}
+}
