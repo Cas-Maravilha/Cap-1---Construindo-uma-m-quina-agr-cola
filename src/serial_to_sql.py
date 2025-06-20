@@ -6,7 +6,7 @@ import argparse
 from datetime import datetime
 
 # Configurações do banco de dados
-DB_NAME = "irrigacao_dados.db"
+DB_NAME = "../db/irrigacao_dados.db"
 
 # Expressões regulares para extrair dados do monitor serial
 RE_UMIDADE = r"Umidade do solo: (\d+\.\d+)%"

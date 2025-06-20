@@ -5,4 +5,4 @@ echo "Instalando dependencias necessarias..."
 pip install streamlit pandas numpy matplotlib plotly
 echo ""
 echo "Iniciando o dashboard..."
-streamlit run dashboard.py
+streamlit run src/dashboard.py

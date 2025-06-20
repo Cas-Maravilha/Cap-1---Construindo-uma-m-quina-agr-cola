@@ -35,7 +35,7 @@ class SistemaIrrigacaoDB:
         """Cria as tabelas do banco de dados a partir do arquivo schema_expandido.sql"""
         try:
             # Lê o arquivo SQL
-            with open('schema_expandido.sql', 'r') as sql_file:
+            with open('../db/schema_expandido.sql', 'r') as sql_file:
                 sql_script = sql_file.read()
             
             # Executa o script SQL
@@ -911,7 +911,7 @@ class SistemaIrrigacaoDB:
 
 # Exemplo de uso
 if __name__ == "__main__":
-    db = SistemaIrrigacaoDB()
+    db = SistemaIrrigacaoDB("../db/irrigacao_expandido.db")
     
     # Exemplo de criação de dados
     print("Criando dados de exemplo...")

@@ -5,8 +5,8 @@ echo Instalando dependencias necessarias...
 pip install streamlit pandas numpy matplotlib plotly
 echo.
 echo Criando o banco de dados...
-python initialize_database.py
+python src/initialize_database.py
 echo.
 echo Iniciando o dashboard...
-streamlit run dashboard.py
+streamlit run src/dashboard.py
 pause

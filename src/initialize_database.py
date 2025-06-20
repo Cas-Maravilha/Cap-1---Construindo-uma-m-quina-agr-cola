@@ -3,8 +3,8 @@ import os
 
 def initialize_database():
     """Inicializa o banco de dados com o schema SQL"""
-    db_path = "exemplo_irrigacao.db"
-    schema_path = "schema_expandido.sql"
+    db_path = "../db/exemplo_irrigacao.db"
+    schema_path = "../db/schema_expandido.sql"
     
     # Verifica se o arquivo schema existe
     if not os.path.exists(schema_path):
