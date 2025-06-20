@@ -19,7 +19,7 @@ st.set_page_config(
 # Função para conectar ao banco de dados
 @st.cache_resource
 def get_connection():
-    return sqlite3.connect("exemplo_irrigacao.db", check_same_thread=False)
+    return sqlite3.connect("../db/exemplo_irrigacao.db", check_same_thread=False)
 
 # Função para carregar dados das leituras
 @st.cache_data(ttl=60)
@@ -116,7 +116,7 @@ def gerar_dados_simulados(conn):
     from db_manager_expandido_completo import SistemaIrrigacaoDB
     import random
     
-    db = SistemaIrrigacaoDB("exemplo_irrigacao.db")
+    db = SistemaIrrigacaoDB("../db/exemplo_irrigacao.db")
     
     # Adiciona fazendas
     id_fazenda = db.adicionar_fazenda("Fazenda Modelo", "Latitude: -23.5505, Longitude: -46.6333", 150.5)

@@ -13,7 +13,7 @@ PH_IDEAL_MIN = 5.5           # pH mínimo ideal
 PH_IDEAL_MAX = 7.0           # pH máximo ideal
 
 # Configuração do banco de dados
-DB_NAME = "irrigacao_dados.db"
+DB_NAME = "../db/irrigacao_dados.db"
 
 def inicializar_banco():
     """Inicializa o banco de dados SQLite"""

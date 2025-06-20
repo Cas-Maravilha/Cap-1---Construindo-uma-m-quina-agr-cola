@@ -16,7 +16,7 @@ def main():
     print("=== Sistema de Irrigação Inteligente - Exemplo de Uso ===\n")
     
     # Inicializa o banco de dados
-    db = SistemaIrrigacaoDB("exemplo_irrigacao.db")
+    db = SistemaIrrigacaoDB("../db/exemplo_irrigacao.db")
     
     # 1. Cadastro de fazendas
     print("\n--- Cadastro de Fazendas ---")

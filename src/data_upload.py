@@ -26,22 +26,30 @@ def check_platformio():
 def create_data_dir():
     """Cria a estrutura de diretórios para os arquivos de dados"""
     # Cria o diretório data se não existir
-    if not os.path.exists('data'):
-        os.makedirs('data')
-        print("Diretório 'data' criado com sucesso.")
+    data_dir = os.path.join('..', 'data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir, exist_ok=True)
+        print(f"Diretório '{data_dir}' criado com sucesso.")
     else:
-        print("Diretório 'data' já existe.")
+        print(f"Diretório '{data_dir}' já existe.")
 
 def copy_web_files():
     """Copia os arquivos web para o diretório data"""
-    web_files = ['index.html', 'styles.css', 'script.js']
+    web_files = [
+        os.path.join('..', 'web', 'index.html'),
+        os.path.join('..', 'web', 'styles.css'),
+        os.path.join('..', 'web', 'script.js')
+    ]
     
-    for file in web_files:
-        if os.path.exists(file):
-            shutil.copy(file, os.path.join('data', file))
-            print(f"Arquivo '{file}' copiado para o diretório 'data'.")
+    dest_dir = os.path.join('..', 'data')
+
+    for source_path in web_files:
+        if os.path.exists(source_path):
+            dest_file_path = os.path.join(dest_dir, os.path.basename(source_path))
+            shutil.copy(source_path, dest_file_path)
+            print(f"Arquivo '{os.path.basename(source_path)}' copiado para '{dest_dir}'.")
         else:
-            print(f"ERRO: Arquivo '{file}' não encontrado.")
+            print(f"ERRO: Arquivo '{source_path}' não encontrado.")
 
 def upload_spiffs():
     """Faz o upload dos arquivos para o sistema de arquivos SPIFFS do ESP32"""
